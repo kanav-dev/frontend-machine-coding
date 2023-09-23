@@ -1,1 +1,1 @@
-# frontend-machine-coding
+# Frontend Machine Coding Challenges
