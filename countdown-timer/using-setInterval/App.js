@@ -3,14 +3,14 @@
 import { useEffect, useState, useRef } from "react";
 
 export default function CountdownTimerSetInterval() {
-  const defaultTimerState = { remTime: 60, isTimerRunning: false };
+  const defaultTimerState = { remTime: 3600, isTimerRunning: false };
   const [timer, setTimer] = useState(defaultTimerState);
   const { remTime, isTimerRunning } = timer;
   const intervalRef = useRef(null);
 
   const startTimer = () => {
     setTimer((timerState) => ({ ...timerState, isTimerRunning: true }));
-    const newIntervalId = setInterval(
+    const intervalId = setInterval(
       () =>
         setTimer((timerState) => ({
           ...timerState,
@@ -18,7 +18,7 @@ export default function CountdownTimerSetInterval() {
         })),
       1000
     );
-    intervalRef.current = newIntervalId;
+    intervalRef.current = intervalId;
   };
 
   const stopTimer = () => {
@@ -33,14 +33,13 @@ export default function CountdownTimerSetInterval() {
 
   useEffect(() => {
     if (remTime === 0) stopTimer();
-
-    return () => clearInterval(intervalRef.current);
   }, [remTime]);
 
   const showTimer = () => {
-    const min = `${Math.floor(remTime / 60)}`.padStart(2, "0");
-    const sec = `${remTime % 60}`.padStart(2, "0");
-    return `${min}:${sec}`;
+    const hours = `${Math.floor(remTime / 3600)}`.padStart(2, "0");
+    const mins = `${Math.floor((remTime % 3600) / 60)}`.padStart(2, "0");
+    const secs = `${remTime % 60}`.padStart(2, "0");
+    return `${hours}:${mins}:${secs}`;
   };
 
   return (
