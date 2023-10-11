@@ -1,28 +1,29 @@
+// https://codesandbox.io/s/todo-list-tkxsjx?file=/src/App.js
+
 import { useState } from "react";
 
-export default function App() {
+export default function TodoList() {
   const [item, setItem] = useState({
     value: "",
     id: 0,
-    isEdit: false
+    isEdit: false,
+    isDone: false
   });
   const [list, setList] = useState([]);
 
   const addItem = () => {
-    setList((prevItems) => [...prevItems, { ...item, id: item.id + 1 }]);
-    setItem((prevItem) => ({ value: "", id: prevItem.id + 1 }));
+    setList((prevItems) => [
+      ...prevItems,
+      { ...item, id: new Date().getTime() }
+    ]);
+    setItem((prevItem) => ({ ...prevItem, value: "" }));
   };
 
-  const handleEditInputChange = (e, id) => {
+  const updateList = (id, key, value) => {
     const updatedList = list.map((listItem) =>
-      listItem.id === id ? { ...listItem, value: e.target.value } : listItem
-    );
-    setList(updatedList);
-  };
-
-  const editItem = (id) => {
-    const updatedList = list.map((listItem) =>
-      listItem.id === id ? { ...listItem, isEdit: !listItem.isEdit } : listItem
+      listItem.id === id
+        ? { ...listItem, [key]: key === "value" ? value : !listItem[key] }
+        : listItem
     );
     setList(updatedList);
   };
@@ -33,7 +34,7 @@ export default function App() {
   };
 
   const displayList = () =>
-    list.map(({ value, id, isEdit }) => (
+    list.map(({ value, id, isEdit, isDone }) => (
       <div
         key={id}
         style={{
@@ -46,17 +47,24 @@ export default function App() {
         <div>
           {isEdit ? (
             <input
-              id={id}
-              name={id}
-              onChange={(e) => handleEditInputChange(e, id)}
+              onChange={(e) => updateList(id, "value", e.target.value)}
               value={value}
             />
           ) : (
-            <p>{value}</p>
+            <p
+              title="Click to mark complete/incomplete"
+              onClick={() => updateList(id, "isDone")}
+              style={{
+                cursor: "pointer",
+                ...(isDone && { textDecoration: "line-through" })
+              }}
+            >
+              {value}
+            </p>
           )}
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => editItem(id)}>
+          <button onClick={() => updateList(id, "isEdit")} disabled={!value}>
             {isEdit ? "Save" : "Edit"}
           </button>
           <button onClick={() => deleteItem(id)}>Delete</button>
@@ -65,16 +73,21 @@ export default function App() {
     ));
 
   return (
-    <div style={{ margin: "auto", width: "50%" }}>
+    <div style={{ margin: "auto", width: "75%" }}>
       <h1>TODO LIST</h1>
-      <div style={{ display: "flex", gap: 10 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between"
+        }}
+      >
         <input
           onChange={(e) =>
             setItem((prevItem) => ({ ...prevItem, value: e.target.value }))
           }
           value={item.value}
+          style={{ flexBasis: "70%" }}
         />
-        <br />
         <button onClick={addItem} disabled={!item.value}>
           Add Item
         </button>
