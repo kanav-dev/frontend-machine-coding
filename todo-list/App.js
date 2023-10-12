@@ -64,7 +64,7 @@ export default function TodoList() {
           )}
         </div>
         <div style={{ display: "flex", gap: "10px" }}>
-          <button onClick={() => updateList(id, "isEdit")} disabled={!value}>
+          <button onClick={() => updateList(id, "isEdit")} disabled={!value.trim()}>
             {isEdit ? "Save" : "Edit"}
           </button>
           <button onClick={() => deleteItem(id)}>Delete</button>
@@ -88,7 +88,7 @@ export default function TodoList() {
           value={item.value}
           style={{ flexBasis: "70%" }}
         />
-        <button onClick={addItem} disabled={!item.value}>
+        <button onClick={addItem} disabled={!item.value.trim()}>
           Add Item
         </button>
       </div>
