@@ -1,3 +1,5 @@
+// https://codesandbox.io/s/progress-bar-3sgwlv
+
 import { useEffect, useRef, useState } from "react";
 
 export default function ProgressBar() {
