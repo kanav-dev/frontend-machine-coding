@@ -1,0 +1,22 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 80%;
+  margin-bottom: 25px;
+}
+
+td,
+th {
+  border: 1px solid black;
+  text-align: center;
+  padding: 8px;
+}
+
+thead,
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
