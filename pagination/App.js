@@ -5,17 +5,19 @@ import "./styles.css";
 
 export default function Pagination() {
   const [data, setData] = useState({});
-  const { status, total, limit, products = [] } = data;
+  const { status, total, products = [] } = data;
   const [currPage, setCurrPage] = useState(1);
+  const PER_PAGE_LIMIT = 10;
   const isLoading = status === "loading";
+  const pageCount = Math.ceil(total / PER_PAGE_LIMIT);
   const isFirstPage = currPage === 1;
-  const isLastPage = currPage === total / limit;
+  const isLastPage = currPage === pageCount;
 
   const getApiData = async (page = 1) => {
     setData((prevData) => ({ ...prevData, status: "loading" }));
     const response = await fetch(
-      `https://dummyjson.com/products?limit=10&skip=${
-        (page - 1) * 10
+      `https://dummyjson.com/products?limit=${PER_PAGE_LIMIT}&skip=${
+        (page - 1) * PER_PAGE_LIMIT
       }&select=title,price`
     );
     const result = await response.json();
@@ -33,9 +35,10 @@ export default function Pagination() {
   const handlePageChange = (dir) => {
     const isNextPage = dir === "next";
     const getUpdatedPage = (page) => page + (isNextPage ? 1 : -1);
-    if (isNextPage && getUpdatedPage(currPage) * limit > products?.length) {
-      getApiData(getUpdatedPage(currPage));
-    }
+    const isApiCallNeeded =
+      Math.min(total, getUpdatedPage(currPage) * PER_PAGE_LIMIT) >
+      products?.length;
+    if (isNextPage && isApiCallNeeded) getApiData(getUpdatedPage(currPage));
     setCurrPage((prevPage) => getUpdatedPage(prevPage));
   };
 
@@ -45,8 +48,8 @@ export default function Pagination() {
 
   const displayProducts = () => {
     const slicedList = products?.slice(
-      (currPage - 1) * limit,
-      currPage * limit
+      (currPage - 1) * PER_PAGE_LIMIT,
+      currPage * PER_PAGE_LIMIT
     );
     return slicedList?.map(({ id, title, price }) => (
       <tr key={id}>
@@ -83,7 +86,7 @@ export default function Pagination() {
             >
               Prev
             </button>
-            <p>{`Page ${currPage} of ${total / limit}`}</p>
+            <p>{`Page ${currPage} of ${pageCount}`}</p>
             <button
               onClick={() => handlePageChange("next")}
               disabled={isLastPage}
